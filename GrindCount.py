@@ -13,16 +13,15 @@ from oauth2client.service_account import ServiceAccountCredentials
 import slack_sdk
 from slack_sdk import WebClient
 
-
-# Connect to google sheets
-# scope = ['https://spreadsheets.google.com/feeds',
-         # 'https://www.googleapis.com/auth/drive']
-# credentials = ServiceAccountCredentials.from_json_keyfile_name(
-    # 'grindcount-97e5589c45db.json', scope)
-# gc = gspread.authorize(credentials)
-
 # instantiate Slack client
 sc = WebClient(os.environ.get('SLACK_BOT_TOKEN'))
+
+# Get google sheet credentials
+spreadsheetKey = os.environ.get('GSHEET_KEY') 
+jsonKey = os.environ.get('GSHEET_JSON_KEY') 
+wksName = os.environ.get('GSHEET_WKS_NAME') 
+
+
 # starterbot's user ID in Slack: value is assigned after the bot starts up
 starterbot_id = None
 
@@ -39,8 +38,7 @@ def write_to_gsheet(service_file_path, spreadsheet_id, sheet_name, data_df):
         pass
     wks_write = sh.worksheet_by_title(sheet_name)
     wks_write.clear('A1',None,'*')
-    wks_write.set_dataframe(data_df, (1,1), encoding='utf-8', fit=True)
-    wks_write.frozen_rows = 1
+    wks_write.set_dataframe(data_df, (0,0), copy_index=True )
 
 def CreateUserMentionList( users, msgText ):
     '''
@@ -141,9 +139,7 @@ if __name__ == "__main__":
 
 
     # Publish to google sheets
-    spreadsheet_key = '1PTeAxnp83qmzbPHX5wSw4omaoE3YVTHw10n0D5NmaoI'
-    wks_name = 'Sheet1'
-    write_to_gsheet( "grindcount-97e5589c45db.json", spreadsheet_key, wks_name,
+    write_to_gsheet( jsonKey, spreadsheetKey, wksName,
                      grindTotals )
 
     print( grindTotals )
