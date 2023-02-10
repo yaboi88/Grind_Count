@@ -136,7 +136,7 @@ if __name__ == "__main__":
 
     # Now update csv
     grindTotals.to_csv( "Total_Grind.csv" )
-
+    grindTotals = grindTotals.sort_values( 'Total', ascending=False )
 
     # Publish to google sheets
     write_to_gsheet( jsonKey, spreadsheetKey, wksName,
